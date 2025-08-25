@@ -1,9 +1,4 @@
 
-# pip install \
-#   "livekit-agents[deepgram,openai,cartesia,silero,turn-detector]~=1.0" \
-#   "livekit-plugins-noise-cancellation~=0.2" \
-#   "python-dotenv"
-
 from dotenv import load_dotenv
 import asyncio
 import base64
@@ -40,7 +35,7 @@ class VisionAssistant(Agent):
             self._tasks.append(task)
             task.add_done_callback(lambda t: self._tasks.remove(t))
         
-        # Register handler when the agent joins
+      
         room.register_byte_stream_handler("images", _image_received_handler)
         
         # Look for existing video tracks from remote participants
@@ -130,20 +125,10 @@ async def entrypoint(ctx: agents.JobContext):
         turn_detection=MultilingualModel(),
     )
 
-    # Optional: Add initial image context
-    initial_ctx = ChatContext()
-    # Uncomment and replace with actual image URL if needed
-    # initial_ctx.add_message(
-    #     role="user",
-    #     content=[
-    #         "Here is a picture to analyze", 
-    #         ImageContent(image="https://example.com/image.jpg")
-    #     ],
-    # )
 
     await session.start(
         room=ctx.room,
-        agent=VisionAssistant(),  # Use our vision-enabled assistant
+        agent=VisionAssistant(),
         room_input_options=RoomInputOptions(
             video_enabled=True,  # Enable video input
         ),
@@ -155,4 +140,5 @@ async def entrypoint(ctx: agents.JobContext):
 
 
 if __name__ == "__main__":
+
     agents.cli.run_app(agents.WorkerOptions(entrypoint_fnc=entrypoint, initialize_process_timeout=300.0)) 
